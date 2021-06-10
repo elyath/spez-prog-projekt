@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    image: backend-test-1
+#    ports:
+#      - 4001:4000
+    container_name: backend-test-1_c
+    networks:
+      - test-nw
+    
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    image: frontend-test-2
+    ports:
+      - 4000:80
+    container_name: frontend-test-2_c
+    networks:
+      - test-nw
+    
+networks:
+  test-nw:

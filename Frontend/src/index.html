@@ -1,0 +1,529 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Covid-19</title>
+    <link type="text/css" href="./css/style.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js" integrity="sha256-nZaxPHA2uAaquixjSDX19TmIlbRNCOrf5HO1oHl5p70=" crossorigin="anonymous"></script>    <script>
+        // Bereitet die Dropdownlisten vor, sodass zu jedem Kontinent nur die dazugehörigen 
+        // Länder angezeigt werden
+        function preloadData(){
+          var result = JSON.parse('{"Asia": ["Afghanistan", "Bahrain", "Bangladesh", "Bhutan", "Brunei_Darussalam", "Cambodia", "China", "India", "Indonesia", "Iran", "Iraq", "Israel", "Japan", "Jordan", "Kazakhstan", "Kuwait", "Kyrgyzstan", "Laos", "Lebanon", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "Oman", "Pakistan", "Palestine", "Philippines", "Qatar", "Saudi_Arabia", "Singapore", "South_Korea", "Sri_Lanka", "Syria", "Taiwan", "Tajikistan", "Thailand", "Timor_Leste", "Turkey", "United_Arab_Emirates", "Uzbekistan", "Vietnam", "Yemen"], "Europe": ["Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia_and_Herzegovina", "Bulgaria", "Croatia", "Cyprus", "Czechia", "Denmark", "Estonia", "Faroe_Islands", "Finland", "France", "Georgia", "Germany", "Gibraltar", "Greece", "Guernsey", "Holy_See", "Hungary", "Iceland", "Ireland", "Isle_of_Man", "Italy", "Jersey", "Kosovo", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North_Macedonia", "Norway", "Poland", "Portugal", "Romania", "Russia", "San_Marino", "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine", "United_Kingdom"], "Africa": ["Algeria", "Angola", "Benin", "Botswana", "Burkina_Faso", "Burundi", "Cameroon", "Cape_Verde", "Central_African_Republic", "Chad", "Comoros", "Congo", "Cote_dIvoire", "Democratic_Republic_of_the_Congo", "Djibouti", "Egypt", "Equatorial_Guinea", "Eritrea", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea_Bissau", "Kenya", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao_Tome_and_Principe", "Senegal", "Seychelles", "Sierra_Leone", "Somalia", "South_Africa", "South_Sudan", "Sudan", "Togo", "Tunisia", "Uganda", "United_Republic_of_Tanzania", "Western_Sahara", "Zambia", "Zimbabwe"], "America": ["Anguilla", "Antigua_and_Barbuda", "Argentina", "Aruba", "Bahamas", "Barbados", "Belize", "Bermuda", "Bolivia", "Bonaire, Saint Eustatius and Saba", "Brazil", "British_Virgin_Islands", "Canada", "Cayman_Islands", "Chile", "Colombia", "Costa_Rica", "Cuba", "Cura\u00e7ao", "Dominica", "Dominican_Republic", "Ecuador", "El_Salvador", "Falkland_Islands_(Malvinas)", "Greenland", "Grenada", "Guatemala", "Guyana", "Haiti", "Honduras", "Jamaica", "Mexico", "Montserrat", "Nicaragua", "Panama", "Paraguay", "Peru", "Puerto_Rico", "Saint_Kitts_and_Nevis", "Saint_Lucia", "Saint_Vincent_and_the_Grenadines", "Sint_Maarten", "Suriname", "Trinidad_and_Tobago", "Turks_and_Caicos_islands", "United_States_of_America", "United_States_Virgin_Islands", "Uruguay", "Venezuela"], "Oceania": ["Australia", "Fiji", "French_Polynesia", "Guam", "New_Caledonia", "New_Zealand", "Northern_Mariana_Islands", "Papua_New_Guinea"], "Other": ["Cases_on_an_international_conveyance_Japan"]}')
+          var continents = Object.keys(result)
+
+          //erzeugt automatisch clickbare Textfelder mit Onclick-Funktionen
+          for (var i=0;i<continents.length;i++){
+            var continent = continents[i]
+
+            var a = document.createElement("a")
+            a.innerHTML = continent
+
+            
+            a.onclick = function (){
+              dropDown()
+              var countries = result[this.textContent]
+              document.getElementById("choice-continent").innerHTML = this.textContent
+              var element = document.getElementById("myDropdownCountry")
+
+              if(element == null){
+                // Wenn das Länder Dropdown noch nicht extistiert, wird es hier erzeugt
+                var button = document.createElement("button")
+                button.onclick = function(){
+                  document.getElementById("myDropdownCountry").classList.toggle("show");
+                }
+                button.className = "dropbtn"
+                button.innerHTML = "Choose a Country"
+                var countryDropdown = document.getElementById("countryDropdown")
+                countryDropdown.appendChild(button)
+                
+                var drop = document.createElement("div")
+                drop.className = "dropdown-content"
+                drop.id = "myDropdownCountry"
+                countryDropdown.appendChild(drop)
+                var input = document.createElement("input")
+                input.setAttribute("type", "text")
+                input.setAttribute("placeholder", "Search..")
+                input.onkeyup = function(){
+                  filterFunction("myDropdownCountry")
+                }
+                input.id = "myInput"
+                drop.appendChild(input)
+                for (var i=0;i<countries.length;i++){
+                  var country = countries[i]
+                  var a = document.createElement("a")
+                  a.innerHTML = country
+                  
+                  a.onclick = function (){
+                    document.getElementById("myDropdownCountry").classList.toggle("show");
+                    document.getElementById("choice-country").innerHTML = this.textContent
+                  }
+                  document.getElementById("myDropdownCountry").appendChild(a)
+                }
+              
+              }else{
+                //zuerst alle Elemente der Liste entfernen und anschließend neue hinzufügen
+                var element = document.getElementById("myDropdownCountry")
+                var elements = element.getElementsByTagName("a")
+                for (var index = elements.length - 1; index >= 0; index--) {
+                  elements[index].parentNode.removeChild(elements[index]);
+                }
+                for (var i=0;i<countries.length;i++){
+                  var country = countries[i]
+                  var a = document.createElement("a")
+                  a.innerHTML = country
+                  
+                  a.onclick = function (){
+                    document.getElementById("myDropdownCountry").classList.toggle("show");
+                    document.getElementById("choice-country").innerHTML = this.textContent
+                  }
+                  document.getElementById("myDropdownCountry").appendChild(a)
+                }
+              }
+            }
+            document.getElementById("myDropdown").appendChild(a);
+          }
+          
+        }
+        
+        //request an den Python Backend Server
+        function httpGet(theUrl, param) {
+          var xmlHttp = new XMLHttpRequest();
+          xmlHttp.open( "GET", theUrl + param, false ); // false for synchronous request
+          xmlHttp.send();
+          
+          return xmlHttp.response;
+        }
+        // ruft im Python Backend die Methode "dailyIncrease()" auf und gibt, je nachdem welche Checkbox bzw. welcher Radio-Button aktiv ist,
+        // den zugehörigen Parameter und den ausgewählten Kontinent oder das Land mit
+        function dailyIncrease(){
+          if(document.getElementById('cases').checked){
+            if(document.getElementById("continent-checkbox").checked){
+              var response = httpGet("api/dailyIncreaseCont?continent=", document.getElementById("choice-continent").textContent+ '&cod=cases')
+            }else{
+              var response = httpGet("api/dailyIncrease?country=", document.getElementById("choice-country").textContent+ '&cod=cases')
+            }
+            let result = JSON.parse(response)
+            barPlot(result)
+          }else if(document.getElementById('deaths').checked){
+            if(document.getElementById("continent-checkbox").checked){
+              var response = httpGet("api/dailyIncreaseCont?continent=", document.getElementById("choice-continent").textContent + '&cod=deaths')
+            }else{
+              var response = httpGet("api/dailyIncrease?country=", document.getElementById("choice-country").textContent+ '&cod=deaths')
+            }  
+            let result = JSON.parse(response)
+            barPlot(result)
+          }else{
+            //wenn weder cases noch deaths aktiviert ist
+            window.alert('Please select "cases" or "deaths".')
+          }
+
+        }
+        function action() {
+
+          if(document.getElementById("continent-checkbox").checked){
+            // ruft im Python Backend die Methode "continentalProgress()" auf und gibt, je nachdem welche Checkbox bzw. welcher Radio-Button aktiv ist, den zugehörigen Parameter und den ausgewählten Kontinent mit
+            if(document.getElementById("cases").checked){
+              var response = httpGet("/api/continentalProgress?continent=", document.getElementById("choice-continent").textContent +'&cod=cases');
+              let result = JSON.parse(response)
+              showPlot(result);
+            }else if(document.getElementById("deaths").checked){
+              var response = httpGet("/api/continentalProgress?continent=", document.getElementById("choice-continent").textContent +'&cod=deaths');
+              let result = JSON.parse(response)
+              showPlot(result);
+            }else{
+              window.alert('Please select "cases" or "deaths".')
+            }
+          }else{
+            // ruft im Python Backend die Methode "showPlot()" auf und gibt das ausgewählte Land mit
+            var response = httpGet("/api/showPlot?country=", document.getElementById("choice-country").textContent);
+            let result = JSON.parse(response)
+            showPlot(result);
+          }
+          
+        }
+        // ruft im Python Backend die Methode "topTenWorld()" auf und gibt, je nachdem welcher Radio-Button aktiv ist,
+        // den zugehörigen Parameter und den ausgewählten Kontinent mit
+        function topTenWorld(){
+  
+          if(document.getElementById("deaths").checked){
+            var response = httpGet("/api/topTenWorld?cod=", "deaths");
+            let result = JSON.parse(response)
+            barPlot(result)
+          }else if(document.getElementById("cases").checked){
+            var response = httpGet("/api/topTenWorld?cod=", "cases");
+            let result = JSON.parse(response)
+            barPlot(result)
+          }else{
+            window.alert('Please select "cases" or "deaths".')
+          }
+        }
+        // ruft im Python Backend die Methode "dailyIncrease()" auf und gibt, je nachdem  welcher Radio-Button aktiv ist,
+        // den zugehörigen Parameter und den ausgewählten Kontinent oder das Land mit
+        function topTen(){
+          if(document.getElementById("continent-checkbox").checked){
+            if(document.getElementById("cases").checked){
+              var response = httpGet("/api/topContinents?cod=", "cases");
+              let result = JSON.parse(response)
+              barPlot(result)
+            }else if(document.getElementById("deaths").checked) {
+              var response = httpGet("/api/topContinents?cod=", "deaths");
+              let result = JSON.parse(response)
+              barPlot(result)
+            }else{
+              window.alert('Please select "cases" or "deaths".')
+            }
+            
+          }else{
+            if(document.getElementById("cases").checked){
+              var response = httpGet("/api/topTen?continent=", document.getElementById("choice-continent").textContent+'&cod=cases');
+              let result = JSON.parse(response)
+              barPlot(result)
+            }else if(document.getElementById("deaths").checked) {
+              
+              var response = httpGet("/api/topTen?continent=", document.getElementById("choice-continent").textContent+'&cod=deaths');
+              let result = JSON.parse(response)
+              barPlot(result)
+            }else{
+              window.alert('Please select "cases" or "deaths".')
+            }
+          }
+          
+        }
+        //klappt die Dropdown Liste aus bzw. wieder ein
+        function dropDown() {
+          document.getElementById("myDropdown").classList.toggle("show");
+        }
+        // suchfunktion für die Dropdown Liste
+        function filterFunction(id) {
+          var input, filter, a, i;
+          input = document.getElementById("myInput");
+          filter = input.value.toUpperCase();
+          div = document.getElementById(id);
+          a = div.getElementsByTagName("a");
+          for (i = 0; i < a.length; i++) {
+            txtValue = a[i].textContent || a[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              a[i].style.display = "";
+            } else {
+              a[i].style.display = "none";
+            }
+          }
+        }
+        //erzeugt ein Balkendiagramm mit den vordefinierten Einstellungen und bildet dieses auf der Canvas ab
+        function barPlot(result){
+          var color = getRandomColor();
+          if(document.getElementById("relative-checkbox").checked){
+            result = result.relative
+            if(document.getElementById("cases").checked){
+              label = "relative cases"
+            }else{
+              label = "relative deaths"
+            }
+          }else{
+            result = result.total
+            if(document.getElementById("cases").checked){
+              label = "cases"
+            }else{
+              label = "deaths"
+            }
+          }
+          var countries = []
+          var dataset = []
+          for (var key in result){
+            if (result.hasOwnProperty(key)) {
+              countries.push(key)
+              dataset.push(result[key])
+            }
+
+          }
+          var canvas =  document.getElementById('myChart')
+          var ctx = canvas.getContext('2d');
+
+          var config = {
+              type: 'bar',
+              data: {
+                labels: countries,
+                datasets: [{
+                  label: label,
+                  data: dataset,
+                  fill: false,
+                  backgroundColor: color,
+                  borderColor: color,
+                }]
+              },
+              options: {
+                responsive: true,
+                title: {
+                  display: true,
+                  text: 'Bar Chart'
+                },
+                tooltips: {
+                  mode: 'index',
+                  intersect: false,
+                },
+                hover: {
+                  mode: 'nearest',
+                  intersect: true
+                },
+                scales: {
+                  xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'Date'
+                    }
+                  }],
+                  yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'Value'
+                    }
+                  }]
+                }
+              }
+            };
+
+            if(window.myChart == null){
+            window.myChart = new Chart(ctx, config)
+            window.myChart.canvas.parentNode.style.height = '700px'
+            window.myChart.canvas.parentNode.style.width = '700px'
+            }else{
+              //Wenn bereits ein Diagramm existiert, wird es zerstört und ein neues wird erzeugt
+              window.myChart.destroy();
+              
+              window.myChart = new Chart(ctx, config)
+               window.myChart.canvas.parentNode.style.height = '700px'
+              window.myChart.canvas.parentNode.style.width = '700px'
+            }
+        }
+        // fügt einen neuen Datensatz zu Liniendiagramm hinzu
+        function addDataset(label, data, color) {
+         
+          var newDataset = {
+            label: label,
+            data: data,
+            backgroundColor: color,
+            borderColor: color,
+            fill: false
+            
+          };
+
+          window.myChart.config.data.datasets.push(newDataset);
+          window.myChart.update();
+        }
+        // entfernt den zuerst hinzugefügten Datensatz aus dem Liniendiagramm
+        function removeDataset() {
+         
+          if(window.myChart != null && window.myChart.config.type == 'line'){
+            window.myChart.config.data.datasets.splice(0, 1);
+            window.myChart.update();
+          }
+        }
+        // gibt eine zufällige Farbe zurück
+        function getRandomColor() {
+          var letters = '0123456789ABCDEF';
+          var color = '#';
+          for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+          }
+          return color;
+        }
+
+        // erzeugt ein Liniendiagramm mit den vordefinierten Einstellungen
+        function showPlot(result){
+          
+          var date =[];
+          var dataset = [];
+          var label = '';
+          var color = getRandomColor();
+
+          if(document.getElementById("continent-checkbox").checked){
+            if(document.getElementById("relative-checkbox").checked){
+              result = result.relative
+              label = 'relative cases ' + document.getElementById("choice-continent").textContent
+            }else{
+              result = result.total
+              label = 'total cases ' + document.getElementById("choice-continent").textContent
+              
+            }
+            for (var key in result){
+              if (result.hasOwnProperty(key)) {
+                date.push(key)
+                dataset.push(result[key])
+              }
+
+            }
+          }else{
+            var count = Object.keys(result).length;
+            for (i=0;i<count;i++){
+              date.push(result[i].dateRep);
+              if (document.getElementById("cases").checked){
+                if(document.getElementById("relative-checkbox").checked){
+                  dataset.push(result[i].cases_relative_to_pop)
+                  label = 'relative cases ' + document.getElementById("choice-country").textContent
+                }else{
+                  dataset.push(result[i].total_cases);
+                  label = 'total cases ' + document.getElementById("choice-country").textContent
+                }
+              }else if(document.getElementById("deaths").checked){
+                if(document.getElementById("relative-checkbox").checked){
+                  dataset.push(result[i].deathrate)
+                  label = 'deathrate ' + document.getElementById("choice-country").textContent
+                }else{
+                  dataset.push(result[i].total_deaths);
+                  label = 'total deaths ' + document.getElementById("choice-country").textContent
+                }
+              }else{
+                window.alert("Please select 'cases' or 'deaths'.");
+                break;
+              }         
+              
+            }
+            date.reverse()
+            dataset.reverse()
+          }
+          if(document.getElementById("cases").checked || document.getElementById("deaths").checked){ 
+
+            var canvas =  document.getElementById('myChart')
+            var ctx = canvas.getContext('2d');
+
+              var config = {
+                type: 'line',
+                data: {
+                  labels: date,
+                  datasets: [{
+                    label: label,
+                    data: dataset,
+                    fill: false,
+                    backgroundColor: color,
+                    borderColor: color,
+                  }]
+                }, 
+                
+                options: {
+                  responsive: true,
+                
+                  title: {
+                    display: true,
+                    text: 'Covid-19 Curve'
+                  },
+                  tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                  },
+                  hover: {
+                    mode: 'nearest',
+                    intersect: true
+                  },
+                  scales: {
+                    xAxes: [{
+                      display: true,
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                      }
+                    }],
+                    yAxes: [{
+                      display: true,
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Cases'
+                      }
+                    }]
+                  }
+                }
+              };
+            
+            if(window.myChart == null){
+              window.myChart = new Chart(ctx, config)
+              window.myChart.canvas.parentNode.style.height = '700px'
+              window.myChart.canvas.parentNode.style.width = '700px'
+            }else if (window.myChart.config.type == 'bar'){
+              //Wenn ein Balkendiagramm aktiv ist, wird es zerstört und ein neues Diagramm wird erzeugt
+              window.myChart.destroy()
+              window.myChart = new Chart(ctx, config)
+              window.myChart.canvas.parentNode.style.height = '700px'
+              window.myChart.canvas.parentNode.style.width = '700px'
+            }else{
+              //fügt einen neuen Datensatz zum Liniendiagramm hinzu und passt die Länge der angezeigten Datensätze aneinander an
+              if (window.myChart.config.data.labels.length != date.length){
+
+                if(window.myChart.config.data.labels.length > date.length){
+                  let difference = window.myChart.config.data.labels.length - date.length
+                  console.log(difference)
+                  for(var i = 0; i< difference; i++){
+                    dataset.unshift(0);
+                  }
+                  addDataset(label, dataset, color)
+                }else{
+                  window.myChart.config.data.labels = date;
+                  let dataset_count = window.myChart.config.data.datasets.length
+                  if (dataset_count > 0){
+                    let difference = date.length - window.myChart.config.data.datasets[dataset_count-1].data.length
+                    for(var i = 0; i < difference; i++){
+                      window.myChart.config.data.datasets[dataset_count-1].data.unshift(0);
+                    }
+                  }
+                  addDataset(label, dataset, color)
+                }
+              } else{
+
+                addDataset(label, dataset, color)
+              }
+            
+              
+            }
+          }
+          
+         
+        }
+
+
+    </script>
+    <noscript>
+      JavaScript is deactived.
+    </noscript>
+  </head>
+  <body onload="preloadData()">
+    <h1>Coronavirus</h1>
+    <div class="dropdown">
+      <button onclick="dropDown()" class="dropbtn">Choose a continent</button>
+      <div id="myDropdown" class="dropdown-content"></div>
+    </div>
+    <div class = "dropdown" id = "countryDropdown"></div>
+    <br>
+    <input type="radio" id = "cases" name = "cases-or-deaths" value = "cases">
+    <label for="cases">cases</label>
+    <input type="radio" id = "deaths" name = "cases-or-deaths" value="deaths">
+    <label for="deaths">deaths</label>
+    <input type="checkbox" id = "continent-checkbox">
+    <label for="continental-checkbox">continental</label>
+    <input type="checkbox" id = "relative-checkbox">
+    <label for="relative-checkbox">relative in %</label> <br>
+    <button type="submit" onclick="action()">show curve</button>
+    <br>
+    <button type="submit" onclick="removeDataset()">remove curve</button>
+    <br>
+    <br>
+    <button type= "submit" onclick ="topTen()">show the top 10</button>
+    <br>
+    <br>
+    <button type="submit" onclick="topTenWorld()">top 10 worldwide</button>
+    <br>
+    <br>
+    <button type="submit" onclick="dailyIncrease()">show daily increase</button>
+    <hr>
+    <div>
+        <p id ="choice-continent">no continent</p>
+        <p id = "choice-country">no country</p>
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+  
+    
+    
+
+  </body>
+  
+
+</html>
